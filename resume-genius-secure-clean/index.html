@@ -1,0 +1,152 @@
+<!-- Token summary panel --><!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeGenius AI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-4xl font-extrabold text-center text-gray-900 mb-2">
+            <span class="text-indigo-600">AI</span> מעצב קורות חיים
+        </h1>
+        <p class="text-center text-gray-600 mb-6 leading-relaxed">
+            ברוכים הבאים ל-**AI Resume Designer**!
+            <br>
+            כלי חדשני זה לוקח את קורות החיים הגולמיים שלך והופך אותם למסמך PDF מקצועי ומעוצב באופן מושלם, מותאם אישית למשרה שאליה אתה מגיש מועמדות.
+            <br>
+            **הזן את פרטי המשרה ותן ל-AI ליצור עבורך את המסמך המנצח.**
+        </p>
+
+        <!-- Progress management buttons -->
+        <div class="flex justify-start gap-4 my-6">
+            <button id="saveProgressBtn" class="secondary-action-button"><i class="fas fa-save"></i>שמור התקדמות</button>
+            <button id="loadProgressBtn" class="secondary-action-button"><i class="fas fa-folder-open"></i>טען התקדמות</button>
+            <button id="clearProgressBtn" class="secondary-action-button"><i class="fas fa-trash-alt"></i>נקה נתונים שמורים</button>
+        </div>
+
+        <!-- Error/success message display areas -->
+        <div id="messageDisplay" class="hidden message-box"></div>
+        <div id="errorDisplay" class="hidden error-box"></div>
+
+        <!-- Job link and details fetching section -->
+        <div class="mb-5">
+            <label for="jobLink">קישור למשרה (אופציונלי):</label>
+            <input type="url" id="jobLink" placeholder="הדבק כאן קישור למשרה ולחץ על הכפתור מטה" class="text-right">
+            <button id="fetchJobDetailsBtn" class="mt-2 w-full main-action-button">טען פרטים מהקישור (באמצעות AI)</button>
+            <div id="loadingLinkDetails" class="hidden loader" style="width: 30px; height: 30px; margin-top: 1rem;"></div>
+        </div>
+
+        <!-- Job details input sections -->
+        <div class="mb-5">
+            <label for="companyName">שם חברה:</label>
+            <input type="text" id="companyName" placeholder="הזן את שם החברה" class="text-right">
+        </div>
+
+        <div class="mb-5">
+            <label for="jobTitle">שם תפקיד:</label>
+            <input type="text" id="jobTitle" placeholder="הזן את שם התפקיד" class="text-right">
+        </div>
+
+        <div class="mb-5">
+            <label for="jobDescription">תיאור תפקיד:</label>
+            <textarea id="jobDescription" placeholder="הדבק את תיאור התפקיד המלא כאן..." class="text-right"></textarea>
+        </div>
+
+        <!-- Keyword analysis section -->
+        <button id="analyzeKeywordsBtn" class="mt-2 mb-4 w-full main-action-button">נתח תיאור משרה למילות מפתח</button>
+        <div id="loadingKeywords" class="hidden loader" style="width: 30px; height: 30px; margin: 0.5rem auto;"></div>
+        <div id="keywordsResultArea" class="hidden mt-4 p-4 bg-gray-100 rounded-lg mb-5">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">מילות מפתח עיקריות שזוהו:</h3>
+            <ul id="keywordsList" class="list-disc list-inside text-gray-700">
+                <!-- Keywords will appear here -->
+            </ul>
+        </div>
+
+        <!-- Raw resume input section (paste text or upload file) -->
+        <div class="mb-5">
+            <label for="resumeInput">קורות חיים גולמיים (הדבק טקסט או העלה קובץ):</label>
+            <textarea id="resumeInput" placeholder="הדבק את הטקסט של קורות החיים שלך כאן..." class="text-right"></textarea>
+            <input type="file" id="resumeFile" accept=".txt, .pdf" class="mt-3">
+            <div id="pdfProcessingMessage" class="hidden pdf-processing-message">מעבד קובץ...</div>
+        </div>
+        
+        <!-- PDF template selection -->
+        <div class="mb-5">
+            <label class="block mb-2 font-semibold text-gray-700">בחר תבנית עיצוב ל-PDF:</label>
+            <div class="flex flex-wrap gap-x-6 gap-y-2">
+                <div>
+                    <input type="radio" id="templateBlue" name="pdfTemplate" value="blue" checked class="mr-2 ml-1 align-middle">
+                    <label for="templateBlue" class="align-middle">כחול מקצועי (ברירת מחדל)</label>
+                </div>
+                <div>
+                    <input type="radio" id="templateGreen" name="pdfTemplate" value="green" class="mr-2 ml-1 align-middle">
+                    <label for="templateGreen" class="align-middle">ירוק מודרני</label>
+                </div>
+                <div>
+                    <input type="radio" id="templateGray" name="pdfTemplate" value="gray" class="mr-2 ml-1 align-middle">
+                    <label for="templateGray" class="align-middle">אפור אלגנטי</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generate CV button -->
+        <button id="generateCvBtn" class="w-full">צור קורות חיים מותאמים</button>
+
+        <!-- General loading indicator -->
+        <div id="loadingIndicator" class="hidden loader"></div>
+        
+        <!-- PDF download result area -->
+        <div id="resultArea" class="hidden text-center mt-6">
+             <a id="downloadLink" href="#" download="Designed_Resume.pdf" class="download-link">הורד קורות חיים מעוצבים (PDF)</a>
+        </div>
+
+        <!-- Cover Letter section -->
+        <div id="coverLetterSection" class="mt-8 pt-6 border-t border-gray-300">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">טיוטת מכתב מקדים (AI Generated)</h2>
+            <!-- Cover letter language selection -->
+            <div class="mb-4">
+                <label class="block mb-2 font-semibold text-gray-700">שפת מכתב מקדים:</label>
+                <div class="flex gap-4">
+                    <div>
+                        <input type="radio" id="langHebrew" name="coverLetterLang" value="hebrew" checked class="ml-1 align-middle">
+                        <label for="langHebrew" class="align-middle">עברית</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="langEnglish" name="coverLetterLang" value="english" class="ml-1 align-middle">
+                        <label for="langEnglish" class="align-middle">אנגלית</label>
+                    </div>
+                </div>
+            </div>
+            <button id="generateCoverLetterBtn" class="w-full main-action-button">צור טיוטת מכתב מקדים</button>
+            <div id="loadingCoverLetter" class="hidden loader" style="width: 30px; height: 30px; margin: 1rem auto;"></div>
+            <div id="coverLetterResultArea" class="hidden">
+                <textarea id="coverLetterText" rows="15" class="w-full p-3 border border-gray-300 rounded-lg text-sm" placeholder="המכתב המקדים יופיע כאן..."></textarea>
+                <button id="copyCoverLetterBtn" class="secondary-action-button mt-2">העתק מכתב מקדים</button>
+            </div>
+        </div>
+
+        <!-- Token summary panel -->
+        <div id="tokenSummary">
+            סך טוקנים שנצרכו בסשן הנוכחי: <span id="totalTokens">0</span>
+        </div>
+    </div>
+
+    <!-- jsPDF CDN for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- PDF.js CDN for PDF parsing - Main library first, then worker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+[build]
+  # התיקייה הראשית שממנה יוגש האתר
+  publish = "." 
+
+[functions]
+  # התיקייה שבה נמצאות הפונקציות שלנו
+  directory = "netlify/functions/"
+  # וודא ש-Netlify יתקין את התלויות של הפונקציה
+  node_bundler = "esbuild"
